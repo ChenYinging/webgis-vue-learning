@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="script.js"></script>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- 搜索栏 -->
+    <div class="search-bar">
+      <input type="text" class="search-input" placeholder="请输入姓名/手机号搜索">
+      <button class="search-btn">搜索</button>
+    </div>
+
+    <!-- 用户列表 -->
+    <div class="user-list-container">
+      <h3>用户列表</h3>
+      <table class="user-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>姓名</th>
+            <th>手机号</th>
+            <th>部门</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody class="user-table-body"></tbody>
+      </table>
+    </div>
+
+    <!-- 分页容器 -->
+    <div class="pagination-container"></div>
+
+    <!-- 弹窗容器 -->
+    <div class="modal-mask">
+      <div class="modal-content">
+        <!-- 表单容器 -->
+        <div>
+          <label>姓名：</label>
+          <input class="name-input" placeholder="请输入姓名">
+        </div>
+
+        <div>
+          <label>手机号：</label>
+          <input class="phone-input" placeholder="请输入手机号">
+        </div>
+
+        <div>
+          <label>部门：</label>
+          <input class="dept-input" placeholder="请输入部门">
+        </div>
+
+        <!-- 按钮容器 -->
+        <div class="modal-btn-group">
+          <button class="modal-btn cofirm-btn">确认</button>
+          <button class="modal-btn cancel-btn">取消</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
