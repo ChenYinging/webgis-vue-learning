@@ -32,14 +32,70 @@ const userList = [
     name: "孟七八",
     phone: 13675984415,
     dept: "大禹算法部"
+  },
+
+  {
+    id: 1006,
+    name: "顾九",
+    phone: 18933742568,
+    dept: "采购管理部"
   }
 ]
 
 const userTableBody = document.querySelector('.user-table-body');
+const searchInput = document.querySelector('.search-input');
+const searchBtn = document.querySelector('.search-btn');
 
+// 搜索功能
+function handleSearch() {
+  const keyword = searchInput.value.trim().toLowerCase();
+  currentPage = 1;
+  if (keyword === "") {
+    renderUserList(userList);
+  } else {
+    const filteredUserList = userList.filter(function (user) {
+      const nameMatch = user.name.toLowerCase().includes(keyword);
+      const phoneMatch = user.phone.toString().includes(keyword);
+      return nameMatch || phoneMatch;
+    })
+    renderUserList(filteredUserList);
+  }
+}
+
+searchBtn.addEventListener('click', handleSearch);
+searchInput.addEventListener('keyup', function (e) {
+  if (e.key === 'Enter') {
+    handleSearch();
+  }
+})
+
+
+const pageSize = 5;
+let currentPage = 1;
+let totalPages = 0;
+
+// 计算总页数
+function calculateTotalPages(data) {
+  totalPages = Math.ceil(data.length / pageSize);
+}
+
+// 定义当前页数据
+function getCurrentPageData(data) {
+  const startIndex = (currentPage - 1) * pageSize;
+  const endIndex = currentPage * pageSize;
+  const currentPageData = data.slice(startIndex, endIndex);
+  return currentPageData;
+}
+
+// 渲染用户列表
 function renderUserList(data) {
   userTableBody.innerHTML = "";
-  data.forEach(user => {
+  // 计算总页数
+  calculateTotalPages(data);
+  // 当前页要显示的数据
+  const currentPageData = getCurrentPageData(data);
+
+  currentPageData.forEach(user => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
     <td>${user.id}</td>
@@ -55,15 +111,130 @@ function renderUserList(data) {
     const deleteBtn = tr.querySelector('.delete-btn');
 
     editBtn.addEventListener('click', () => {
-
-
+      const targetUser = userList.find(item => item.id === user.id);
+      showModal(targetUser);
     });
 
     deleteBtn.addEventListener('click', () => {
-
-
+      if (confirm(`确定要删除用户【${user.name}】吗？`)) {
+        const index = userList.findIndex(item => item.id === user.id);
+        if (index > -1) {
+          userList.splice(index, 1);
+          // 重新渲染列表（保留搜索状态）
+          handleSearch();
+        }
+      }
     });
     userTableBody.appendChild(tr);
   });
+  renderPagination();
 }
+
+// 分页控件渲染
+const paginationContainer = document.querySelector('.pagination-container');
+
+function renderPagination() {
+  paginationContainer.innerHTML = "";
+
+  //上一页按钮
+  const prevBtn = document.createElement('button');
+  prevBtn.textContent = "上一页";
+  prevBtn.className = "page-btn";
+  prevBtn.addEventListener('click', () => {
+    if (currentPage <= 1) return;
+    currentPage--;
+    handleSearch();
+  });
+  prevBtn.disabled = currentPage === 1;
+  paginationContainer.appendChild(prevBtn);
+
+
+  // 页码按钮
+  for (let i = 1; i <= totalPages; i++) {
+    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+      const pageNumBtn = document.createElement('button');
+      pageNumBtn.textContent = i;
+      pageNumBtn.className = "page-btn";
+      // 选中当前页样式
+      if (i === currentPage) {
+        pageNumBtn.style.backgroundColor = "#409eff";
+        pageNumBtn.style.color = "#fff";
+        pageNumBtn.style.borderColor = "#409eff";
+      }
+      pageNumBtn.addEventListener('click', () => {
+        currentPage = i;
+        handleSearch();
+      });
+      paginationContainer.appendChild(pageNumBtn);
+    }
+  }
+
+  // 下一页按钮
+  const nextBtn = document.createElement('button');
+  nextBtn.textContent = "下一页";
+  nextBtn.className = "page-btn";
+  nextBtn.addEventListener('click', () => {
+    if (currentPage >= totalPages) return;
+    currentPage++;
+    handleSearch();
+  });
+  nextBtn.disabled = currentPage === totalPages;
+  paginationContainer.appendChild(nextBtn);
+}
+
+
+
+
+
+// 弹窗功能
+const modalMask = document.querySelector('.modal-mask');
+const nameInput = document.querySelector('.name-input');
+const phoneInput = document.querySelector('.phone-input');
+const deptInput = document.querySelector('.dept-input');
+const confirmBtn = document.querySelector('.confirm-btn');
+const cancelBtn = document.querySelector('.cancel-btn');
+let currentEditId = null;   // 记录当前编辑用户的ID
+
+function showModal(user) {
+  modalMask.style.display = 'flex';
+  currentEditId = user.id;
+  nameInput.value = user.name;
+  phoneInput.value = user.phone;
+  deptInput.value = user.dept;
+}
+
+function hideModal() {
+  modalMask.style.display = 'none';
+  currentEditId = null;
+  nameInput.value = '';
+  phoneInput.value = '';
+  deptInput.value = '';
+}
+
+// 确认编辑按钮事件
+confirmBtn.addEventListener('click', () => {
+  // 更新用户数据
+  const targetIndex = userList.findIndex(item => item.id === currentEditId);
+  if (targetIndex > -1) {
+    userList[targetIndex] = {
+      ...userList[targetIndex],
+      name: nameInput.value.trim(),
+      phone: Number(phoneInput.value.trim()),
+      dept: deptInput.value.trim()
+    };
+    handleSearch();
+    hideModal();
+  }
+});
+
+// 取消按钮
+cancelBtn.addEventListener('click', hideModal);
+
+// 点击遮罩层关闭弹窗
+modalMask.addEventListener('click', (e) => {
+  if (e.target === modalMask) {
+    hideModal();
+  }
+});
+
 renderUserList(userList);
