@@ -73,6 +73,7 @@ searchInput.addEventListener('keyup', function (e) {
 const pageSize = 5;
 let currentPage = 1;
 let totalPages = 0;
+let currentRenderData = [];
 
 // 计算总页数
 function calculateTotalPages(data) {
@@ -83,16 +84,14 @@ function calculateTotalPages(data) {
 function getCurrentPageData(data) {
   const startIndex = (currentPage - 1) * pageSize;
   const endIndex = currentPage * pageSize;
-  const currentPageData = data.slice(startIndex, endIndex);
-  return currentPageData;
+  return data.slice(startIndex, endIndex);
 }
 
 // 渲染用户列表
 function renderUserList(data) {
   userTableBody.innerHTML = "";
-  // 计算总页数
+  currentRenderData = [...data];
   calculateTotalPages(data);
-  // 当前页要显示的数据
   const currentPageData = getCurrentPageData(data);
 
   currentPageData.forEach(user => {
@@ -127,35 +126,39 @@ function renderUserList(data) {
     });
     userTableBody.appendChild(tr);
   });
+
   renderPagination();
 }
 
 // 分页控件渲染
 const paginationContainer = document.querySelector('.pagination-container');
-
 function renderPagination() {
   paginationContainer.innerHTML = "";
 
-  //上一页按钮
+  // 上一页按钮
   const prevBtn = document.createElement('button');
   prevBtn.textContent = "上一页";
   prevBtn.className = "page-btn";
   prevBtn.addEventListener('click', () => {
     if (currentPage <= 1) return;
     currentPage--;
-    handleSearch();
+    renderUserList(currentRenderData);
   });
-  prevBtn.disabled = currentPage === 1;
+  prevBtn.disabled = totalPages === 1 || currentPage === 1;
   paginationContainer.appendChild(prevBtn);
 
-
-  // 页码按钮
+  // 2. 页码按钮
   for (let i = 1; i <= totalPages; i++) {
-    if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+    // 总页数≤3时显示所有页码；总页数>3时显示首页、尾页、当前页±1
+    const shouldShow = totalPages <= 3
+      ? true
+      : (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1));
+
+    if (shouldShow) {
       const pageNumBtn = document.createElement('button');
       pageNumBtn.textContent = i;
       pageNumBtn.className = "page-btn";
-      // 选中当前页样式
+      // 选中样式
       if (i === currentPage) {
         pageNumBtn.style.backgroundColor = "#409eff";
         pageNumBtn.style.color = "#fff";
@@ -163,7 +166,7 @@ function renderPagination() {
       }
       pageNumBtn.addEventListener('click', () => {
         currentPage = i;
-        handleSearch();
+        renderUserList(currentRenderData);
       });
       paginationContainer.appendChild(pageNumBtn);
     }
@@ -176,9 +179,9 @@ function renderPagination() {
   nextBtn.addEventListener('click', () => {
     if (currentPage >= totalPages) return;
     currentPage++;
-    handleSearch();
+    renderUserList(currentRenderData);
   });
-  nextBtn.disabled = currentPage === totalPages;
+  nextBtn.disabled = totalPages === 1 || currentPage === totalPages;
   paginationContainer.appendChild(nextBtn);
 }
 
