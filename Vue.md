@@ -115,4 +115,58 @@ v-model 会将被绑定的值与 <input> 的值自动同步，这样我们就不
 
 ## 计算属性
 
-computed ()可以让我们创建一个计算属性 ref，这个 ref 会动态地根据其他响应式数据源来计算其 .value
+computed ()可以让我们创建一个计算属性 ref，这个 ref 会动态地根据其他响应式数据源来计算其 .value。
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps11.jpg) 
+
+## 生命周期和模板引用
+
+模板引用——也就是指向模板中一个 DOM 元素的 ref。我们需要通过这个特殊的 ref attribute 来实现模板引用：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps12.jpg) 
+
+要访问该引用，我们需要声明一个同名的 ref：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps13.jpg) 
+
+注意这个 ref 使用 null 值来初始化。这是因为当 <script setup> 执行时，DOM 元素还不存在。模板引用 ref 只能在组件挂载后访问。
+
+要在挂载之后执行代码，我们可以使用 onMounted() 函数：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps14.jpg) 
+
+这被称为生命周期钩子——它允许我们注册一个在组件的特定生命周期调用的回调函数。还有一些其他的钩子如 onUpdated 和 onUnmounted。
+
+## 侦听器
+
+有时我们需要响应性地执行一些“副作用”——例如，当一个数字改变时将其输出到控制台。我们可以通过侦听器来实现它：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps15.jpg) 
+
+watch() 可以直接侦听一个 ref，并且只要 count 的值改变就会触发回调。watch() 也可以侦听其他类型的数据源。
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps16.jpg) 
+
+ 
+
+## 组件
+
+父组件可以在模板中渲染另一个组件作为子组件。要使用子组件，我们需要先导入它：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps17.jpg) 
+
+然后我们就可以在模板中使用组件，就像这样：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps18.jpg) 
+
+## Props
+
+子组件可以通过 props 从父组件接受动态数据。首先，需要声明它所接受的 props：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps19.jpg) 
+
+注意 defineProps() 是一个编译时宏，并不需要导入。一旦声明，msg prop 就可以在子组件的模板中使用。它也可以通过 defineProps() 所返回的对象在 JavaScript 中访问。
+
+父组件可以像声明 HTML attributes 一样传递 props。若要传递动态值，也可以使用 v-bind 语法：
+
+![img](file:///C:\Users\syrjb\AppData\Local\Temp\ksohtml3000\wps20.jpg) 
