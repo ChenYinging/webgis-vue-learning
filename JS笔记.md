@@ -6,9 +6,9 @@
 
 forEach 是 JavaScript 中数组的内置方法。它允许迭代数组中的每个元素，并对每个元素执行操作。
 
- ![77423329220](C:\Users\syrjb\AppData\Local\Temp\1774233292202.png)
+![片](D:\project\github\webgis-vue-learning\JS图片\图片1.png)
 
- ![77423330043](C:\Users\syrjb\AppData\Local\Temp\1774233300430.png)
+ ![片](D:\project\github\webgis-vue-learning\JS图片\图片2.png)
 
 forEach 中的回调函数实际上可以接受最多三个参数：当前元素、当前元素的索引以及调用 forEach 的数组
 
