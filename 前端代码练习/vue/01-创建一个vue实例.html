@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app">
+    <h1>{{ msg }}</h1>
+    <a href="#">{{count}}</a>
+    box -- {{}}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+
+  <script>
+    const app = new Vue({
+      // 通过 el 配置选择器，指定 Vue 管理的是哪个盒子
+      el: '#app',
+      // 通过 data 提供数据
+      data: {
+        msg: 'Hello 舜禹股份',
+        count: 666
+      }
+    })
+  </script>
+</body>
+
+</html>
