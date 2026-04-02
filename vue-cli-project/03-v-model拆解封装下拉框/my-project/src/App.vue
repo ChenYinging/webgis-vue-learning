@@ -1,7 +1,9 @@
 <template>
   <div id="app">
-  <BaseSelect :cityId="selectId" @changeCity="selectId = $event"></BaseSelect>
-  </div>
+  <!-- <BaseSelect :cityId="selectId" @changeCity="selectId = $event"></BaseSelect> -->
+  <!-- <BaseSelect :value="selectId" @input="selectId = $event"></BaseSelect> -->
+  <BaseSelect v-model="selectId"></BaseSelect>
+</div>
 </template>
 
 <script>
@@ -14,7 +16,7 @@ export default {
   },
   data(){
     return{
-      selectId: '102'
+      selectId: '103'
     }
   }
 }
