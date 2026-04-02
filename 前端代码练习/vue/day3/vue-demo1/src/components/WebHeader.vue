@@ -1,7 +1,7 @@
 <template>
   <div class="web-header">
     header
-    
+    <WebButton></WebButton>    
   </div>
 </template>
 

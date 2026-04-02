@@ -1,10 +1,12 @@
 <template>
   <div class="web-footer">
     footer
+    <WebButton></WebButton>
   </div>
 </template>
 
 <script>
+
 export default {
 
 }

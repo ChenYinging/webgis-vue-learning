@@ -1,10 +1,12 @@
 <template>
   <div class="web-main">
     main
+    <WebButton></WebButton>
   </div>
 </template>
 
 <script>
+
 export default {
 
 }
