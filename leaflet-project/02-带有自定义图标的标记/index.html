@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>带有自定义图标的标记</title>
+
+  <!-- 引入Leaflet样式和JS -->
+  <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+  <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    #hefei-map {
+      height: 600px;
+      width: 1000px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hefei-map"></div>
+
+  <script>
+    const map = L.map('hefei-map').setView([31.8644, 117.2940], 17);
+
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'],
+      maxZoom: 19,
+      attribution: '&copy; 高德地图'
+    }).addTo(map)
+
+    // 创建图标
+    const shopIcon = L.icon({
+      iconUrl: './icon/商铺餐饮.png',
+      // shadowUrl: 'leaf-shadow.png',
+
+      iconSize: [20, 20],
+      iconAnchor: [15, 15], // 图标上对应标记位置的点
+      popupAnchor: [7.5, 0] // 弹出窗口应相对于图标锚点开启的位置
+      // shadowSize: [50, 64],
+      // shadowAnchor: [4, 62]
+    })
+
+    L.marker([31.8642, 117.2946], { icon: shopIcon }, { alt: '商铺餐饮' }).addTo(map).bindPopup("商铺");
+
+    // 创建几个有很多共同点的图标
+    const normalIcon = L.Icon.extend({
+      options: {
+        iconSize: [20, 20],
+        iconAnchor: [15, 15],
+        popupAnchor: [7.5, 0]
+      }
+    });
+
+    const coffeeIcon = new normalIcon({ iconUrl: './icon/餐饮咖啡.png' });
+    const apartmentIcon = new normalIcon({ iconUrl: './icon/配套公寓.png' });
+    const officeIcon = new normalIcon({ iconUrl: './icon/商业办公.png' });
+
+    L.marker([31.8631, 117.2910], { icon: coffeeIcon }).addTo(map).bindPopup("咖啡店");
+    L.marker([31.8649, 117.2987], { icon: apartmentIcon }).addTo(map).bindPopup("公寓");
+    L.marker([31.8629, 117.2950], { icon: apartmentIcon }).addTo(map).bindPopup("公寓");
+    L.marker([31.8627, 117.2920], { icon: officeIcon }).addTo(map).bindPopup("办公楼");
+
+  </script>
+</body>
+
+</html>

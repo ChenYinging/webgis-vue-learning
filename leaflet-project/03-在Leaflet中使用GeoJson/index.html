@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>在Leaflet中使用GeoJson</title>
+
+  <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+  <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+  <!-- 坐标转换库 -->
+  <script src="https://cdn.jsdelivr.net/npm/coordtransform@2.1.2/index.min.js"></script>
+
+  <style>
+    #hefei-map {
+      height: 600px;
+      width: 1000px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hefei-map"></div>
+
+  <script>
+    const map = L.map('hefei-map').setView([31.8644, 117.2940], 13);
+
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'],
+      maxZoom: 19,
+      attribution: '&copy; 高德地图'
+    }).addTo(map)
+
+    // GeoJSON feature 示例
+    const hefeiPoint = {
+      "type": "Feature",
+      "properties": {
+        "name": "合肥天鹅湖",
+        "popupContent": "这里是合肥天鹅湖！"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [117.226889, 31.824122]
+      }
+    };
+
+    L.geoJson(hefeiPoint, {
+      pointToLayer: (feature, latlng) => {
+        // WGS-84 → GCJ-02
+        const gcj = coordtransform.wgs84togcj02(latlng.lng, latlng.lat);
+        return L.marker([gcj[1], gcj[0]]);
+      },
+      onEachFeature: (feature, layer) => {
+        // 绑定properties里的弹窗内容
+        layer.bindPopup(feature.properties.popupContent)
+      }
+    }).addTo(map);
+  </script>
+</body>
+
+</html>

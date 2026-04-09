@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Leaflet快速入门指南</title>
+
+  <!-- 引入Leaflet样式和JS -->
+  <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+  <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+
+  <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script> -->
+
+  <style>
+    #map1 {
+      height: 600px;
+      width: 800px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map1"></div>
+
+  <script>
+    // 1. 创建地图实例
+    // 设置地图显示的中心点和缩放大小
+    const map = L.map('map1').setView([31.8612, 117.2830], 13)
+    // 2. 加载地图底图（瓦片图层）
+    // L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    //   maxZoom: 19,  // 地图最大能放大到19级
+    //   // 版权声明
+    //   attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    // }).addTo(map);  // 把底图添加到地图上
+
+    L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'], // 多节点负载均衡
+      maxZoom: 19,
+      attribution: '&copy; 高德地图'
+    }).addTo(map);
+
+    // 向地图添加图形
+    const marker = L.marker([31.856164, 117.284092]).addTo(map);
+    const circle = L.circle([31.856164, 117.284092], {
+      color: '#7edb5e',
+      fillColor: '#23b178',
+      fillOpacity: 0.5, // 不透明度
+      radius: 200
+    }).addTo(map);
+    const polygon = L.polygon([
+      [31.873, 117.28],
+      [31.865, 117.28],
+      [31.865, 117.29],
+      [31.875, 117.29],
+    ], {
+      color: '#6cc0d9',
+      fillColor: '#297aa0',
+      fillOpacity: 0.3
+    }).addTo(map);
+
+    // 将信息附加到地图上
+    marker.bindPopup("省建设院大厅").openPopup();
+    circle.bindPopup("我是圆。");
+    polygon.bindPopup("我是多边形。")
+
+    // 将弹出窗口用作图层
+    const popup = L.popup()
+      .setLatLng([31.86, 117.33])
+      .setContent("我是一个独立窗口。")
+      .openOn(map)  // 使用 openOn 时，它在打开一个新窗口时，先前打开的弹出窗口会自动关闭
+
+    // 处理事件
+    // function onMapClick(e) {
+    //   alert("你点击了地图上的" + e.latlng);
+    // }
+    // map.on('click', onMapClick) // 事件监听
+
+    const popup2 = L.popup();
+    function onMapClick(e) {
+      popup2
+        .setLatLng(e.latlng)
+        .setContent("你点击了地图上的" + e.latlng.toString())
+        .openOn(map)
+    }
+    map.on('click', onMapClick)
+  </script>
+</body>
+
+</html>
