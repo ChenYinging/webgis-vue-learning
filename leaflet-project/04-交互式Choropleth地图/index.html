@@ -12,7 +12,7 @@
   <script src="./340000.js"></script>
 
   <!-- 坐标转换库 -->
-  <script src="https://cdn.jsdelivr.net/npm/coordtransform@2.1.2/index.min.js"></script>
+  <!-- <script src="https://cdn.jsdelivr.net/npm/coordtransform@2.1.2/index.min.js"></script> -->
 
   <style>
     #anhui-map {
@@ -36,27 +36,49 @@
     }).addTo(map);
 
     // 转换函数（WGS84 → GCJ02）
-    function wgs84ToGcj02GeoJson(geoJson) {
-      const transform = (coords) => {
-        if (typeof coords[0] === 'number') return coordtransform.wgs84togcj02(coords[0], coords[1]);
-        return coords.map(c => transform(c));
-      };
+    // function wgs84ToGcj02GeoJson(geoJson) {
+    //   const transform = (coords) => {
+    //     if (typeof coords[0] === 'number') return coordtransform.wgs84togcj02(coords[0], coords[1]);
+    //     return coords.map(c => transform(c));
+    //   };
+    //   return {
+    //     ...geoJson,
+    //     features: geoJson.features.map(f => ({ ...f, geometry: { ...f.geometry, coordinates: transform(f.geometry.coordinates) } }))
+    //   };
+    // }
+
+    // L.geoJson(anhuiData, {
+    //   style: {
+    //     color: '#2E8B57',
+    //     weight: 1,
+    //     fillColor: '#90EE90',
+    //     fillOpacity: 0.4
+    //   }
+    // }).addTo(map)
+
+    L.marker([29.393959175749526, 118.19540751630741]).addTo(map).bindPopup("我是黄山最南边")
+
+    // 添加颜色
+    function getColor(d) {
+      return d > 700 ? '#b71c1c' :
+        d > 500 ? '#e53935' :
+          d > 300 ? '#fb8c00' :
+            d > 150 ? '#ffeb3b' :
+              '#81c784';
+    }
+
+    function anhuistyle(feature) {
       return {
-        ...geoJson,
-        features: geoJson.features.map(f => ({ ...f, geometry: { ...f.geometry, coordinates: transform(f.geometry.coordinates) } }))
+        fillColor: getColor(feature.properties.density),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
       };
     }
 
-    L.geoJson(wgs84ToGcj02GeoJson(anhuiData), {
-      style: {
-        color: '#2E8B57',
-        weight: 2,
-        fillColor: '#90EE90',
-        fillOpacity: 0.4
-      }
-    }).addTo(map)
-
-
+    L.geoJson(anhuiData, { style: anhuistyle }).addTo(map);
   </script>
 </body>
 
