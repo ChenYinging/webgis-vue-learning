@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>交互式Choropleth地图</title>
+
+  <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+  <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+
+  <script src="./340000.js"></script>
+
+  <!-- 坐标转换库 -->
+  <script src="https://cdn.jsdelivr.net/npm/coordtransform@2.1.2/index.min.js"></script>
+
+  <style>
+    #anhui-map {
+      height: 600px;
+      width: 1000px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="anhui-map"></div>
+
+  <script>
+    const map = L.map("anhui-map").setView([31.733272524263008, 117.32997259226599], 8);
+
+    const tiles = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'],
+      maxZoom: 19,
+      attribution: '&copy; 高德地图'
+    }).addTo(map);
+
+    // 转换函数（WGS84 → GCJ02）
+    function wgs84ToGcj02GeoJson(geoJson) {
+      const transform = (coords) => {
+        if (typeof coords[0] === 'number') return coordtransform.wgs84togcj02(coords[0], coords[1]);
+        return coords.map(c => transform(c));
+      };
+      return {
+        ...geoJson,
+        features: geoJson.features.map(f => ({ ...f, geometry: { ...f.geometry, coordinates: transform(f.geometry.coordinates) } }))
+      };
+    }
+
+    L.geoJson(wgs84ToGcj02GeoJson(anhuiData), {
+      style: {
+        color: '#2E8B57',
+        weight: 2,
+        fillColor: '#90EE90',
+        fillOpacity: 0.4
+      }
+    }).addTo(map)
+
+
+  </script>
+</body>
+
+</html>

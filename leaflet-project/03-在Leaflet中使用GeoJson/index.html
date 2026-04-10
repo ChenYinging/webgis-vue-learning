@@ -24,7 +24,7 @@
   <div id="hefei-map"></div>
 
   <script>
-    const map = L.map('hefei-map').setView([31.8644, 117.2940], 13);
+    const map = L.map('hefei-map').setView([31.816821984213266, 117.25206939554504], 13);
 
     L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
       subdomains: ['1', '2', '3', '4'],
@@ -33,7 +33,7 @@
     }).addTo(map)
 
     // GeoJSON feature 示例
-    const hefeiPoint = {
+    const swanLake = {
       "type": "Feature",
       "properties": {
         "name": "合肥天鹅湖",
@@ -41,19 +41,160 @@
       },
       "geometry": {
         "type": "Point",
-        "coordinates": [117.226889, 31.824122]
+        "coordinates": [117.22074391411626, 31.813634836633263] // WGS84
       }
     };
 
-    L.geoJson(hefeiPoint, {
-      pointToLayer: (feature, latlng) => {
-        // WGS-84 → GCJ-02
-        const gcj = coordtransform.wgs84togcj02(latlng.lng, latlng.lat);
-        return L.marker([gcj[1], gcj[0]]);
+    // L.geoJSON(swanLake).addTo(map) // 未进行坐标转换
+
+    // WGS84 → GCJ02
+    const wgsLng = swanLake.geometry.coordinates[0];
+    const wgsLat = swanLake.geometry.coordinates[1];
+    const [gcjLng, gcjLat] = coordtransform.wgs84togcj02(wgsLng, wgsLat)
+
+    L.marker([gcjLat, gcjLng])
+      .addTo(map)
+      .bindPopup("这里是天鹅湖！")
+      .openPopup();
+
+    // GeoJSON 对象的数组
+    const myLines = [{
+      "type": "LineString",
+      "coordinates": [[117.215565, 31.808941], [117.226965, 31.808307], [117.237689, 31.809168]]  // GCJ-02 
+    }, {
+      "type": "LineString",
+      "coordinates": [[117.213119, 31.820202], [117.229324, 31.816254], [117.252069, 31.816822]]
+    }]
+
+    // 创建一个空的 GeoJSON 图层
+    const myLayer = L.geoJSON().addTo(map);
+    myLayer.addData(myLines);
+
+    // style
+    const myStyle = {
+      "color": "#ffa45c",
+      "weight": 10,
+      "opacity": 0.65
+    };
+
+    L.geoJSON(myLines, {
+      style: myStyle
+    }).addTo(map);
+
+    // 根据单个特征的属性来确定其样式
+    const states = [{
+      "type": "Feature",
+      "properties": { "type": "lake" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [117.21762397732009, 31.812148033937937],
+          [117.22864443938576, 31.814905103361916],
+          [117.23142221164234, 31.810083421245018],
+          [117.2159957195182, 31.81163026515425]
+        ]]
+      }
+    }, {
+      "type": "Feature",
+      "properties": { "type": "building" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [117.2228, 31.8179],
+          [117.2247, 31.8181],
+          [117.2256, 31.8169],
+          [117.2253, 31.8157],
+          [117.2237, 31.8152],
+          [117.2221, 31.8156],
+          [117.2218, 31.8169],
+          [117.2228, 31.8179]
+        ]]
+      }
+    }];
+
+    L.geoJSON(states, {
+      style: function (feature) {
+        switch (feature.properties.type) {
+          case 'lake': return { color: "#ff0000" };
+          case 'building': return { color: "#0000ff" }
+        }
+      }
+    }).addTo(map)
+
+    // pointToLayer
+    const point = {
+      "type": "Feature",
+      "properties": {
+        "popupContent": "我是一个点！"
       },
-      onEachFeature: (feature, layer) => {
-        // 绑定properties里的弹窗内容
-        layer.bindPopup(feature.properties.popupContent)
+      "geometry": {
+        "type": "Point",
+        "coordinates": [117.2306031862924, 31.815243232132843]
+      }
+    };
+
+    const geojsonMarkerOptions = {
+      radius: 8,
+      fillColor: "#ff7800",
+      color: "#000",
+      weight: 1,
+      opacity: 1,
+      fillOpacity: 0.8
+    };
+
+    L.geoJSON(point, {
+      pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, geojsonMarkerOptions);
+      }
+    }).addTo(map).bindPopup(point.properties.popupContent).openPopup();
+
+    // onEachFeature
+    // 在点击地物的时候给它们附加一个弹出窗口
+    function onEachFeature(feature, layer) {
+      if (feature.properties && feature.properties.popupContent) {
+        layer.bindPopup(feature.properties.popupContent);
+      }
+    }
+
+    var geojsonFeature = {
+      "type": "Feature",
+      "properties": {
+        "popupContent": "1"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [117.23550061088184, 31.815119293693037]
+      }
+    };
+
+    L.geoJSON(geojsonFeature, {
+      onEachFeature: onEachFeature
+    }).addTo(map);
+
+    // filter
+    const someFeatures = [{
+      "type": "Feature",
+      "properties": {
+        "show_on_map": true
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [117.24322819126434, 31.811465411560818]
+      }
+    }, {
+      "type": "Feature",
+      "properties": {
+        "show_on_map": false
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [117.24515765263374, 31.80708538288032]
+      }
+    }];
+
+    L.geoJSON(someFeatures, {
+      filter: function (feature, layer) {
+        return feature.properties.show_on_map;
       }
     }).addTo(map);
   </script>
