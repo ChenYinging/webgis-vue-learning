@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>layer Groups 和 layers Control</title>
+
+  <link rel="stylesheet" href="../node_modules/leaflet/dist/leaflet.css">
+  <script src="../node_modules/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    #map1 {
+      height: 600px;
+      width: 800px;
+      margin: 0 auto;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="map1"></div>
+
+  <script>
+    const map = L.map('map1').setView([31.8612, 117.2830], 13)
+
+    const gaodeTileLayer = L.tileLayer('https://webrd0{s}.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=8&x={x}&y={y}&z={z}', {
+      subdomains: ['1', '2', '3', '4'], // 多节点负载均衡
+      maxZoom: 19,
+      attribution: '&copy; 高德地图'
+    });
+
+    const huaiheRoad = L.marker([31.864419029748362, 117.29326019745152]).bindPopup('这里是淮河路步行街');
+    const xinghuaPark = L.marker([31.869298188883697, 117.27375023896458]).bindPopup('这里是杏花公园');
+    const xiaoyaojinPark = L.marker([31.868930586009398, 117.29511419023865]).bindPopup('这里是逍遥津公园');
+    const secondHospital = L.marker([31.856950736461464, 117.3183651315997]).bindPopup('这里是第二人民医院');
+    const hfUniversity = L.marker([31.84495630318069, 117.29576321845364]).bindPopup('这里是合肥工业大学');
+    const hfScienceMuseum = L.marker([31.841827732730863, 117.2495511821579]).bindPopup('合肥科技馆');
+
+    const buildings = L.layerGroup([huaiheRoad, xinghuaPark, xiaoyaojinPark, secondHospital, hfUniversity, hfScienceMuseum]);
+
+    // 底图层
+    const baseMaps = {
+      "高德地图": gaodeTileLayer
+    }
+    // 覆盖层
+    const overlayMaps = {
+      "合肥地标": buildings
+    };
+
+    const layerControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+  </script>
+</body>
+
+</html>
